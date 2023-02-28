@@ -38,11 +38,18 @@ const writeCounter = (count, callback) => {
 
 // Public API - Fix this function //////////////////////////////////////////////
 
-exports.getNextUniqueId = () => {
-  counter = counter + 1;
-  return zeroPaddedNumber(counter);
-};
+exports.getNextUniqueId = (callback = (err, res) => {console.log(err, res)}) => {
+  // counter = counter + 1;
+  // callback will take assign counter to second arg given
+  readCounter((err, response) => {
+    counter = response + 1;
 
+    writeCounter(counter, () => {
+      // console.log('wrote counter to memory');
+      callback(null, zeroPaddedNumber(counter));
+    });
+  });
+}
 
 
 // Configuration -- DO NOT MODIFY //////////////////////////////////////////////
