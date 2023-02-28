@@ -21,16 +21,26 @@ exports.readAll = (callback) => {
     if (err) {
       console.log('I failed');
     } else {
+      // define Promise.all
       var data = _.map(files, (text) => {
-        text = text.slice(0, -4);
-        let id = text;
-        return { id, text };
+        return new Promise((resolveFunc, rejectFunc) => {
+          let id = text.slice(0, -4);
+
+          fs.readFile(`${exports.dataDir}/${id}.txt`, 'utf8', (err, text) => {
+            if (err) {
+              rejectFunc(err);
+            } else {
+              resolveFunc({ id, text });
+            }
+          });
+        });
       });
 
-      callback(null, data);
+      Promise.all(data).then((outputData) => {
+        callback(null, outputData);
+      });
     }
-  })
-
+  });
 };
 
 exports.readOne = (id, callback) => {
